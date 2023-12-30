@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather Dashboard</title>
+  <style>
+    /* Add your CSS styles here */
+    /* You can style the dashboard elements */
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h1>Weather Dashboard</h1>
+    <input type="text" id="cityInput" placeholder="Enter City">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherInfo"></div>
+  </div>
+
+  <script>
+    // JavaScript code for API requests and dashboard update
+    // Get your API key from OpenWeatherMap
+    const apiKey = '6bf413c2e88cb4ca8e5252acc70d8770';
+
+    function getWeather() {
+      const city = document.getElementById('cityInput').value;
+
+      // Use the Geocoding API to get coordinates for the city
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${chicago}&appid=${6bf413c2e88cb4ca8e5252acc70d8770}`)
+        .then(response => response.json())
+        .then(data => {
+          const { coord } = data;
+          const { lat, lon } = coord;
+
+          // Use the coordinates to fetch weather forecast
+          return fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${41.850}&lon=${-87.650}&appid=${6bf413c2e88cb4ca8e5252acc70d8770}`);
+        })
+        .then(response => response.json())
+        .then(weatherData => {
+          // Display weather information on the dashboard
+          const weatherInfoDiv = document.getElementById('weatherInfo');
+          weatherInfoDiv.innerHTML = ''; // Clear previous data
+
+          // Example: Display the temperature for the next 5 days
+          weatherData.list.forEach(item => {
+            const date = new Date(item.dt * 1000); // Convert timestamp to date
+            const temperature = item.main.temp; // Access temperature data
+            const weatherDesc = item.weather[0].description; // Access weather description
+
+            const weatherItem = document.createElement('div');
+            weatherItem.innerHTML = `${date.toDateString()} - Temperature: ${temperature}K - ${weatherDesc}`;
+            weatherInfoDiv.appendChild(weatherItem);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Handle errors
+        });
+    }
+  </script>
+</body>
+</html>
